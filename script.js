@@ -1,4 +1,5 @@
 const inputArquivo = document.getElementById('arquivo-json');
+
 inputArquivo.addEventListener('change', e => {
     const file = e.target.files[0];
     if (!file) {
