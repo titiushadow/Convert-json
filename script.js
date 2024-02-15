@@ -41,12 +41,22 @@ inputArquivo.addEventListener('change', e => {
           const resposta = cardLink.querySelector('.resposta');
           if (resposta) {
             resposta.remove(); // Remove a resposta se já estiver visível
+            // Restaura os traços entre os valores de 'start' e 'end'
+            const startEnd = cardLink.querySelector('.startEnd');
+            if (startEnd) {
+              startEnd.textContent = `${pergunta.start} ______ ${pergunta.end}`;
+            }
           } else {
             // Cria um parágrafo para exibir a resposta
             const respostaParagrafo = document.createElement('p');
             respostaParagrafo.classList.add('resposta', 'mt-2', 'text-sm', 'text-gray-700', 'dark:text-gray-400', 'text-center');
-            respostaParagrafo.textContent = `Answer: ${pergunta.answer}`; // Exibe a resposta
             cardLink.appendChild(respostaParagrafo);
+
+            // Substitui os traços entre os valores de 'start' e 'end' pela resposta
+            const startEnd = cardLink.querySelector('.startEnd');
+            if (startEnd) {
+              startEnd.textContent = `${pergunta.start} ${pergunta.answer} ${pergunta.end}`;
+            }
           }
         });
 
@@ -105,7 +115,7 @@ inputArquivo.addEventListener('change', e => {
         // Adiciona os valores de 'start' e 'end' abaixo do título
         if (pergunta.start && pergunta.end) {
           const startEnd = document.createElement('p');
-          startEnd.classList.add('mb-2', 'text-sm', 'text-gray-700', 'dark:text-gray-400', 'text-center'); // Texto centralizado
+          startEnd.classList.add('mb-2', 'text-sm', 'text-gray-700', 'dark:text-gray-400', 'text-center', 'startEnd'); // Texto centralizado
           startEnd.textContent = `${pergunta.start} ______ ${pergunta.end}`;
           cardLink.appendChild(startEnd);
         }
