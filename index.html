@@ -1,17 +1,22 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-    <head>
-        <meta charset="UTF-8">
-        <title>Convert-json</title>
-    </head>
-    <body>
-        <h1>Convert Json</h1>
+<head>
+  <meta charset="UTF-8">
+  <title>Convert-json</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="container mx-auto max-w-7xl">
+    <h1 class="text-3xl font-bold text-gray-800">Convert Json</h1>
+    
 
-        <input type="file" id="arquivo-json" accept=".json">
+    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Upload file</label>
+    <input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="arquivo-json" accept=".json" type="file">    
 
-        <!-- Exibição do conteúdo -->
-        <div id="conteudo"></div>
+    <div id="conteudo" class="mt-8"></div>
+  </div>
 
-        <script src="script.js"></script>
-    </body>
+  <script src="script.js"></script>
+</body>
 </html>
