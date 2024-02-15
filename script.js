@@ -59,7 +59,7 @@ inputArquivo.addEventListener('change', e => {
         const proximaQuestao = data.find(item => item.order === pergunta.order && item.type === 'fonetico');
         if (proximaQuestao) {
             const audio = new Audio(proximaQuestao.audio);
-        
+
             // Cria o ícone SVG de play e atribui os atributos
             const playIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
             playIcon.setAttribute("class", "w-6 h-6 text-gray-800 dark:text-white absolute top-2 right-2");
@@ -72,9 +72,9 @@ inputArquivo.addEventListener('change', e => {
             path.setAttribute("clip-rule", "evenodd");
             playIcon.appendChild(path);
             cardLink.appendChild(playIcon);
-        
-            // Adiciona o evento de reprodução de áudio ao clicar no ícone
-            playIcon.addEventListener('click', () => {
+
+            // Função para controlar o estado do ícone de reprodução
+            const togglePlayIcon = () => {
                 if (audio.paused) {
                     audio.play();
                     path.setAttribute("d", "M6 4h3v16H6V4zm9 0h3v16h-3V4z");
@@ -82,12 +82,20 @@ inputArquivo.addEventListener('change', e => {
                     audio.pause();
                     path.setAttribute("d", "M8.6 5.2A1 1 0 0 0 7 6v12a1 1 0 0 0 1.6.8l8-6a1 1 0 0 0 0-1.6l-8-6Z");
                 }
+            };
+
+            // Adiciona o evento de reprodução de áudio ao clicar no ícone
+            playIcon.addEventListener('click', togglePlayIcon);
+            
+            // Adiciona o evento para controlar o estado do ícone de reprodução quando o áudio terminar
+            audio.addEventListener('ended', () => {
+                path.setAttribute("d", "M8.6 5.2A1 1 0 0 0 7 6v12a1 1 0 0 0 1.6.8l8-6a1 1 0 0 0 0-1.6l-8-6Z");
             });
-        
+
             // Adiciona o áudio ao card
             cardLink.appendChild(audio);
         }
-        
+
         // Título da pergunta
         const titulo = document.createElement('h5');
         titulo.classList.add('mb-2', 'text-2xl', 'font-bold', 'tracking-tight', 'text-gray-900', 'dark:text-white', 'text-center'); // Texto centralizado
