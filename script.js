@@ -56,18 +56,38 @@ inputArquivo.addEventListener('change', e => {
         subTipo.textContent = pergunta.sub_type.charAt(0).toUpperCase() + pergunta.sub_type.slice(1); // Transforma a primeira letra em maiúscula
         cardLink.appendChild(subTipo);
 
-        // Adiciona o áudio no canto superior direito
-        if (pergunta.audio) {
-          const audioContainer = document.createElement('div');
-          audioContainer.classList.add('absolute', 'top-2', 'right-2');
-          const audio = document.createElement('audio');
-          audio.src = pergunta.audio;
-          audio.controls = true;
-          audio.classList.add('w-8', 'h-8');
-          audioContainer.appendChild(audio);
-          cardLink.appendChild(audioContainer);
+        const proximaQuestao = data.find(item => item.order === pergunta.order && item.type === 'fonetico');
+        if (proximaQuestao) {
+            const audio = new Audio(proximaQuestao.audio);
+        
+            // Cria o ícone SVG de play e atribui os atributos
+            const playIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            playIcon.setAttribute("class", "w-6 h-6 text-gray-800 dark:text-white absolute top-2 right-2");
+            playIcon.setAttribute("aria-hidden", "true");
+            playIcon.setAttribute("fill", "currentColor");
+            playIcon.setAttribute("viewBox", "0 0 24 24");
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.setAttribute("fill-rule", "evenodd");
+            path.setAttribute("d", "M8.6 5.2A1 1 0 0 0 7 6v12a1 1 0 0 0 1.6.8l8-6a1 1 0 0 0 0-1.6l-8-6Z");
+            path.setAttribute("clip-rule", "evenodd");
+            playIcon.appendChild(path);
+            cardLink.appendChild(playIcon);
+        
+            // Adiciona o evento de reprodução de áudio ao clicar no ícone
+            playIcon.addEventListener('click', () => {
+                if (audio.paused) {
+                    audio.play();
+                    path.setAttribute("d", "M6 4h3v16H6V4zm9 0h3v16h-3V4z");
+                } else {
+                    audio.pause();
+                    path.setAttribute("d", "M8.6 5.2A1 1 0 0 0 7 6v12a1 1 0 0 0 1.6.8l8-6a1 1 0 0 0 0-1.6l-8-6Z");
+                }
+            });
+        
+            // Adiciona o áudio ao card
+            cardLink.appendChild(audio);
         }
-
+        
         // Título da pergunta
         const titulo = document.createElement('h5');
         titulo.classList.add('mb-2', 'text-2xl', 'font-bold', 'tracking-tight', 'text-gray-900', 'dark:text-white', 'text-center'); // Texto centralizado
@@ -84,7 +104,7 @@ inputArquivo.addEventListener('change', e => {
 
         // Adiciona os outros campos (que foram removidos anteriormente) à interface
         for (const key in pergunta) {
-          if (pergunta[key] !== null && key !== 'id' && key !== 'created_at' && key !== 'title' && key !== 'type' && key !== 'lesson_id' && key !== 'order' && key !== 'audio' && key !== 'sub_type' && key !== 'start' && key !== 'end' && key !== 'answer') {
+          if (pergunta[key] !== null && key !== 'id' && key !== 'created_at' && key !== 'title' && key !== 'type' && key !== 'lesson_id' && key !== 'order' && key !== 'audio' && key !== 'sub_type' && key !== 'start' && key !== 'end' && key !== 'answer' && !(key === 'size' && pergunta[key] === 4)) {
             const campo = document.createElement('p');
             campo.classList.add('text-sm', 'text-gray-700', 'dark:text-gray-400', 'text-center'); // Texto centralizado
             campo.textContent = `${key.charAt(0).toUpperCase() + key.slice(1)}: ${pergunta[key]}`;
