@@ -11,15 +11,15 @@ inputArquivo.addEventListener('change', e => {
 
   const fileName = file.name.replace(/\.[^/.]+$/, "");
 
-  fileNameDisplay.textContent = fileName || defaultTitle; 
+  fileNameDisplay.textContent = fileName || defaultTitle;
 
   const reader = new FileReader();
   reader.onload = () => {
     const data = JSON.parse(reader.result);
     const conteudo = document.getElementById('conteudo');
-    conteudo.innerHTML = ''; 
+    conteudo.innerHTML = '';
 
-    const ordensProcessadas = new Set(); 
+    const ordensProcessadas = new Set();
     let cardCount = 0;
 
     for (const pergunta of data) {
@@ -63,26 +63,32 @@ inputArquivo.addEventListener('change', e => {
         // Função para exibir a resposta ao clicar no botão 'Answer'
         answerButton.addEventListener('click', () => {
           // Verifica se a resposta já está visível
-          const resposta = contentWrapper.querySelector('.resposta');
-          if (resposta) {
-            resposta.remove(); 
-            // Restaura os traços entre os valores de 'start' e 'end'
-            const startEnd = contentWrapper.querySelector('.startEnd');
-            if (startEnd) {
-              startEnd.textContent = `${pergunta.start} ______ ${pergunta.end}`;
-            }
+          // Adiciona a lógica para destacar a resposta correta em vermelho para perguntas do tipo 'alternativas'
+          if (pergunta.sub_type === 'alternativas') {
+            highlightCorrectAnswer(pergunta, contentWrapper);
           } else {
-            // Cria um parágrafo para exibir a resposta
-            const respostaParagrafo = document.createElement('p');
-            respostaParagrafo.classList.add('resposta', 'mt-2', 'text-sm', 'text-gray-700', 'dark:text-gray-400', 'text-center');
-            contentWrapper.appendChild(respostaParagrafo);
+            const resposta = contentWrapper.querySelector('.resposta');
+            if (resposta) {
+              resposta.remove(); 
+              // Restaura os traços entre os valores de 'start' e 'end'
+              const startEnd = contentWrapper.querySelector('.startEnd');
+              if (startEnd) {
+                startEnd.textContent = `${pergunta.start} ______ ${pergunta.end}`;
+              }
+            } else {
+              // Cria um parágrafo para exibir a resposta
+              const respostaParagrafo = document.createElement('p');
+              respostaParagrafo.classList.add('resposta', 'mt-2', 'text-sm', 'text-gray-700', 'dark:text-gray-400', 'text-center');
+              contentWrapper.appendChild(respostaParagrafo);
 
-            // Substitui os traços entre os valores de 'start' e 'end' pela resposta
-            const startEnd = contentWrapper.querySelector('.startEnd');
-            if (startEnd) {
-              startEnd.textContent = `${pergunta.start} ${pergunta.answer} ${pergunta.end}`;
+              // Substitui os traços entre os valores de 'start' e 'end' pela resposta
+              const startEnd = contentWrapper.querySelector('.startEnd');
+              if (startEnd) {
+                startEnd.textContent = `${pergunta.start} ${pergunta.answer} ${pergunta.end}`;
+              }
             }
           }
+
         });
 
         // Adiciona o resto do conteúdo abaixo do botão de resposta
@@ -139,14 +145,18 @@ inputArquivo.addEventListener('change', e => {
 
         // Adiciona os outros campos (que foram removidos anteriormente) à interface
         for (const key in pergunta) {
-          if (pergunta[key] !== null && key !== 'id' && key !== 'created_at' && key !== 'title' && key !== 'type' && key !== 'lesson_id' && key !== 'order' && key !== 'audio' && key !== 'sub_type' && key !== 'start' && key !== 'translate' && key !== 'end' && key !== 'answer' && !(key === 'size' && pergunta[key] === 4)) {
+          if (pergunta[key] !== null && key !== 'id' && key !== 'created_at' && key !== 'subtitle' && key !== 'title' && key !== 'type' && key !== 'lesson_id' && key !== 'order' && key !== 'audio' && key !== 'sub_type' && key !== 'start' && key !== 'translate' && key !== 'end' && key !== 'answer' && !(key === 'size' && pergunta[key] === 4)) {
             const campo = document.createElement('p');
             campo.classList.add('text-sm', 'text-gray-700', 'dark:text-gray-400', 'text-center'); // Texto centralizado
             campo.textContent = `${key.charAt(0).toUpperCase() + key.slice(1)}: ${pergunta[key]}`;
             contentWrapper.appendChild(campo);
+            
+            // Se o campo atual for uma alternativa, adicione a classe 'alternativa' para futura seleção
+            if (key.match(/[a-z]/i)) {
+              campo.classList.add('alternativa');
+            }
           }
         }
-
         // Adiciona o botão de tradução
         const translationButton = document.createElement('button');
         translationButton.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="#1967D2" focusable="false" class="ep0rzf NMm5M"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"></path></svg>`;
@@ -173,7 +183,7 @@ inputArquivo.addEventListener('change', e => {
                           const translation = await fetchTranslation(perguntaFonetica.translate);
 
                           translationParagraph = document.createElement('p');
-                          translationParagraph.classList.add('text-center', 'text-gray-700', 'dark:text-gray-400', 'mt-2', 'translation-paragraph');
+                          translationParagraph.classList.add('text-center', 'text-white', 'dark:text-white', 'mt-2', 'translation-paragraph');
                           translationParagraph.textContent = `${translation.charAt(0).toUpperCase() + translation.slice(1).toLowerCase()}`;
       
                           contentWrapper.insertBefore(translationParagraph, translationButton);
@@ -201,7 +211,34 @@ inputArquivo.addEventListener('change', e => {
 fileNameDisplay.textContent = defaultTitle;
 
 async function fetchTranslation(text) {
-
   // retorna a tradução da pergunta
   return text; 
 }
+
+function highlightCorrectAnswer(pergunta, contentWrapper) {
+
+  // Verifica se a resposta já está visível
+  const resposta = contentWrapper.querySelector('.resposta');
+  if (resposta) {
+    return;
+  }
+
+  // Obtém a letra da resposta correta
+  const correctAnswer = pergunta.answer.toUpperCase(); // Verifique se "answer" é a chave correta
+
+  // Seleciona os elementos das alternativas
+  const alternativeElements = contentWrapper.querySelectorAll('.alternativa');
+
+  // Percorre cada elemento alternativo
+  for (const element of alternativeElements) {
+    const answerLetter = element.textContent.trim().charAt(0).toUpperCase();
+
+    // Destaca a alternativa correta
+    if (answerLetter === correctAnswer) {
+      element.style.color = 'lightgreen';
+    }
+  }
+}
+
+
+
