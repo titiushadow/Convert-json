@@ -203,9 +203,9 @@ inputArquivo.addEventListener('change', e => {
 
       // Botão de avançar
       const nextButton = document.createElement('button');
-nextButton.textContent = 'Next';
-nextButton.classList.add('bg-blue-500', 'text-white', 'px-2', 'py-1', 'rounded', 'absolute', 'bottom-2', 'right-2');
-contentWrapper.appendChild(nextButton);
+      nextButton.textContent = 'Next';
+      nextButton.classList.add('bg-blue-500', 'text-white', 'px-2', 'py-1', 'rounded', 'absolute', 'bottom-2', 'right-2');
+      contentWrapper.appendChild(nextButton);
 
         conteudo.appendChild(perguntaContainer);
       }
